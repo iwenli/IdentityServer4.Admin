@@ -1,0 +1,25 @@
+﻿{
+  "IdentityData": {
+    "Roles": [
+      {
+        "Name": "MyRole"
+      }
+    ],
+    "Users": [
+      {
+        "Username": "admin",
+        "Password": "password",
+        "Email": "admin@iwenli.org",
+        "Roles": [
+          "MyRole"
+        ],
+        "Claims": [
+          {
+            "Type": "name",
+            "Value": "admin"
+          }
+        ]
+      }
+    ]
+  }
+}
