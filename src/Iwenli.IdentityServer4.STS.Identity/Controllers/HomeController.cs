@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Iwenli.IdentityServer4.STS.Identity.Helpers;
 using Iwenli.IdentityServer4.STS.Identity.ViewModels.Home;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Iwenli.IdentityServer4.STS.Identity.Controllers
 {

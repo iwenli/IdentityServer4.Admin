@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Iwenli.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Iwenli.IdentityServer4.STS.Identity.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Iwenli.IdentityServer4.STS.Identity.Configuration.Test
 {

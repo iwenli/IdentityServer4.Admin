@@ -27,6 +27,7 @@ using Iwenli.IdentityServer4.Admin.EntityFramework.PostgreSQL.Extensions;
 using Iwenli.IdentityServer4.Admin.EntityFramework.Shared.Configuration;
 using Iwenli.IdentityServer4.Admin.EntityFramework.SqlServer.Extensions;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
+using IdentityServer4;
 
 namespace Iwenli.IdentityServer4.STS.Identity.Helpers
 {
@@ -142,7 +143,7 @@ namespace Iwenli.IdentityServer4.STS.Identity.Helpers
             where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
         {
             var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
-            
+
             var identityConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
             var configurationConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
             var persistedGrantsConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
@@ -308,15 +309,47 @@ namespace Iwenli.IdentityServer4.STS.Identity.Helpers
             IConfiguration configuration)
         {
             var externalProviderConfiguration = configuration.GetSection(nameof(ExternalProvidersConfiguration)).Get<ExternalProvidersConfiguration>();
-
             if (externalProviderConfiguration.UseGitHubProvider)
             {
-                authenticationBuilder.AddGitHub(options =>
+                authenticationBuilder.AddGoogle(options =>
+                {
+                    options.ClientId = externalProviderConfiguration.GoogleClientId;
+                    options.ClientSecret = externalProviderConfiguration.GoogleClientSecret;
+                    options.Scope.Add("userinfo:email");
+                })
+                .AddMicrosoftAccount(options =>
+                {
+                    //options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.ClientId = externalProviderConfiguration.MicrosoftClientId;
+                    options.ClientSecret = externalProviderConfiguration.MicrosoftClientSecret;
+                    options.Scope.Add("user:email");
+                })
+                .AddGitHub(options =>
                 {
                     options.ClientId = externalProviderConfiguration.GitHubClientId;
                     options.ClientSecret = externalProviderConfiguration.GitHubClientSecret;
                     options.Scope.Add("user:email");
-                });
+                })
+                .AddGitee(options =>
+                {
+                    options.ClientId = externalProviderConfiguration.GiteeClientId;
+                    options.ClientSecret = externalProviderConfiguration.GiteeClientSecret;
+                    options.Scope.Add("emails");
+                })
+
+                //.AddQQ(options =>
+                //{
+                //    options.ClientId = externalProviderConfiguration.QQClientId;
+                //    options.ClientSecret = externalProviderConfiguration.QQClientSecret;
+                //    options.Scope.Add("user:email");
+                //})
+                //.AddWeixin(options =>
+                //{
+                //    options.ClientId = externalProviderConfiguration.WeixinClientId;
+                //    options.ClientSecret = externalProviderConfiguration.WeixinClientSecret;
+                //    options.Scope.Add("user:email");
+                //})
+                ;
             }
         }
 
@@ -351,9 +384,9 @@ namespace Iwenli.IdentityServer4.STS.Identity.Helpers
             where TIdentityDbContext : DbContext
         {
             var configurationDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
-            var persistedGrantsDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);            
+            var persistedGrantsDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
             var identityDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
-            
+
             var healthChecksBuilder = services.AddHealthChecks()
                 .AddDbContextCheck<TConfigurationDbContext>("ConfigurationDbContext")
                 .AddDbContextCheck<TPersistedGrantDbContext>("PersistedGrantsDbContext")

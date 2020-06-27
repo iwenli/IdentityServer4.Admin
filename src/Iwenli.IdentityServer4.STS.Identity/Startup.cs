@@ -11,6 +11,7 @@ using Iwenli.IdentityServer4.STS.Identity.Configuration;
 using Iwenli.IdentityServer4.STS.Identity.Configuration.Constants;
 using Iwenli.IdentityServer4.STS.Identity.Configuration.Interfaces;
 using Iwenli.IdentityServer4.STS.Identity.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Iwenli.IdentityServer4.STS.Identity
 {
