@@ -1,8 +1,9 @@
-@using IdentityServer4.Extensions
+﻿@using IdentityServer4.Extensions
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Iwenli.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
 @using Iwenli.IdentityServer4.STS.Identity.Configuration.Interfaces
+@using System.Runtime.InteropServices
 @inject IRootConfiguration RootConfiguration
 @inject IViewLocalizer Localizer
 @{
@@ -83,7 +84,14 @@
             <div class="row">
                 <div class="col-6 col-md">
                     @RootConfiguration.AdminConfiguration.PageTitle
-                    <small class="d-block mb-3 text-muted">@Localizer["FooterCopyright"] @DateTime.Now.Year</small>
+                    <a href="http://www.beian.miit.gov.cn/publish/query/indexFirst.action" target="_blank">
+                        <span class="icon-earth"></span>
+                        京ICP备18026310号-1
+                    </a>
+                    <small class="d-block mb-3 text-muted">
+                        @Localizer["FooterCopyright"] @DateTime.Now.Year / 
+                        @RuntimeInformation.OSDescription-@RuntimeInformation.OSArchitecture / @RuntimeInformation.FrameworkDescription @(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") is object ? " on Docker" : "")
+                    </small>
                 </div>
                 <div class="col-md-6 text-right">
                     @await Html.PartialAsync("Common/SelectLanguage")
