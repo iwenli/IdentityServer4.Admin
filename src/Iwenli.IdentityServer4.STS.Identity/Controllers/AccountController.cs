@@ -384,7 +384,6 @@ namespace Iwenli.IdentityServer4.STS.Identity.Controllers
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            HttpContext.ChallengeAsync(provider, properties); 
             return Challenge(properties, provider);
         }
 

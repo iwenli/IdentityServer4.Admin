@@ -12,6 +12,8 @@ using Iwenli.IdentityServer4.STS.Identity.Configuration.Constants;
 using Iwenli.IdentityServer4.STS.Identity.Configuration.Interfaces;
 using Iwenli.IdentityServer4.STS.Identity.Helpers;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.HttpOverrides;
+using System;
 
 namespace Iwenli.IdentityServer4.STS.Identity
 {
@@ -39,7 +41,7 @@ namespace Iwenli.IdentityServer4.STS.Identity
 
             // Add services for authentication, including Identity model and external providers
             RegisterAuthentication(services);
-            
+
             // Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
             // Including settings for MVC and Localization
             // If you want to change primary keys or use another db model for Asp.Net Core Identity:
@@ -49,17 +51,54 @@ namespace Iwenli.IdentityServer4.STS.Identity
             RegisterAuthorization(services);
 
             services.AddIdSHealthChecks<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext>(Configuration);
+
+            // https://docs.microsoft.com/zh-cn/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.1
+            if (string.Equals(Configuration.GetSection("ForwardedHeadersOptions:Enable").Value,
+            "true", StringComparison.OrdinalIgnoreCase))
+            {
+                services.Configure<ForwardedHeadersOptions>(options =>
+                {
+                    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                        ForwardedHeaders.XForwardedProto;
+                    // Only loopback proxies are allowed by default.
+                    // Clear that restriction because forwarders are enabled by explicit 
+                    // configuration.
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
+                });
+            }
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> _logger)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
             // Add custom security headers
             app.UseSecurityHeaders();
+
+            //app.Use(async (context, next) =>
+            //{
+            //    using (_logger.BeginScope($"ÇëÇóÀ´ÁË £º{Guid.NewGuid()}"))
+            //    {
+            //        // Request method, scheme, and path
+            //        _logger.LogError("Request Method: {Method}", context.Request.Method);
+            //        _logger.LogError("Request Scheme: {Scheme}", context.Request.Scheme);
+            //        _logger.LogError("Request Path: {Path}", context.Request.Path);
+
+            //        // Headers
+            //        foreach (var header in context.Request.Headers)
+            //        {
+            //            _logger.LogError("Header: {Key}: {Value}", header.Key, header.Value);
+            //        }
+
+            //        // Connection: RemoteIp
+            //        _logger.LogError("Request RemoteIp: {RemoteIpAddress}",
+            //            context.Connection.RemoteIpAddress);
+            //    }
+            //    await next();
+            //});
 
             app.UseStaticFiles();
             UseAuthentication(app);
@@ -67,8 +106,10 @@ namespace Iwenli.IdentityServer4.STS.Identity
 
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoint => 
-            { 
+
+
+            app.UseEndpoints(endpoint =>
+            {
                 endpoint.MapDefaultControllerRoute();
                 endpoint.MapHealthChecks("/health", new HealthCheckOptions
                 {

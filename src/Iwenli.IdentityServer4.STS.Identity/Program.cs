@@ -51,8 +51,15 @@ namespace Iwenli.IdentityServer4.STS.Identity
                  })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureKestrel(options => options.AddServerHeader = false)
+                    //.UseUrls("https://*:443")
+                    //.UseKestrel(opt => {
+                    //    opt.Listen(System.Net.IPAddress.Any, 443, listenOptions =>
+                    //    {
+                    //        listenOptions.UseHttps("server.pfx", "****");
+                    //    });
+                    //})
+                    .UseStartup<Startup>();
                 })
                 .UseSerilog((hostContext, loggerConfig) =>
                 {

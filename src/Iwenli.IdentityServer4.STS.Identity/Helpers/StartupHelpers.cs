@@ -92,10 +92,7 @@ namespace Iwenli.IdentityServer4.STS.Identity.Helpers
         /// <param name="app"></param>
         public static void UseSecurityHeaders(this IApplicationBuilder app)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+            app.UseForwardedHeaders();
 
             app.UseHsts(options => options.MaxAge(days: 365));
             app.UseReferrerPolicy(options => options.NoReferrer());
@@ -315,14 +312,12 @@ namespace Iwenli.IdentityServer4.STS.Identity.Helpers
                 {
                     options.ClientId = externalProviderConfiguration.GoogleClientId;
                     options.ClientSecret = externalProviderConfiguration.GoogleClientSecret;
-                    options.Scope.Add("userinfo:email");
                 })
                 .AddMicrosoftAccount(options =>
                 {
                     //options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.ClientId = externalProviderConfiguration.MicrosoftClientId;
                     options.ClientSecret = externalProviderConfiguration.MicrosoftClientSecret;
-                    options.Scope.Add("user:email");
                 })
                 .AddGitHub(options =>
                 {
